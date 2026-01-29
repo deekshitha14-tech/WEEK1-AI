@@ -1,0 +1,146 @@
+WATER JUG PROBLEM USING A*
+
+PROBLEM-1
+
+CODE:
+
+import heapq
+def water_jug(A, B, C):
+    pq = [(0, 0, 0, 0)]          # (f, g, jug1, jug2)
+    parent = {(0, 0): None}
+    visited = set()
+    while pq:
+        _, g, x, y = heapq.heappop(pq)
+        if (x, y) in visited:
+            continue
+        visited.add((x, y))
+        # Goal check
+        if x == C or y == C:
+            path = []
+            while True:
+                path.append((x, y))
+                if parent[(x, y)] is None:
+                    break
+                x, y = parent[(x, y)]
+            print("Path:", path[::-1])
+            return
+        # All possible next states
+        next_states = [
+            (A, y),                      # fill jug1
+            (x, B),                      # fill jug2
+            (0, y),                      # empty jug1
+            (x, 0),                      # empty jug2
+            (x - min(x, B - y), y + min(x, B - y)),  # jug1 → jug2
+            (x + min(y, A - x), y - min(y, A - x))   # jug2 → jug1
+        ]
+        for nx, ny in next_states:
+            if (nx, ny) not in visited:
+                parent[(nx, ny)] = (x, y)
+                h = min(abs(nx - C), abs(ny - C))
+                heapq.heappush(pq, (g + 1 + h, g + 1, nx, ny))
+    print("Not Possible")
+# -------- User Input --------
+A = int(input("enter capacity of jug1: "))
+B = int(input("enter capacity of jug2: "))
+C = int(input("enter target: "))
+water_jug(A, B, C)
+
+OUTPUT:
+
+enter capacity of jug1: 4
+enter capacity of jug2: 3
+enter target: 2
+Path: [(0, 0), (0, 3), (3, 0), (3, 3), (4, 2)]
+
+PROBLEM 2:
+
+CODE:
+
+import heapq
+def water_jug_astar(X, Y, target):
+    pq = [(abs(0-target), 0, (0,0))]
+    parent = {(0,0): None}
+    visited = set()
+    while pq:
+        _, g, (x, y) = heapq.heappop(pq)
+        if (x, y) in visited: continue
+        visited.add((x, y))
+        if x == target:
+            path = []
+            while (x, y) in parent:
+                path.append((x, y))
+                if parent[(x, y)] is None: break
+                x, y = parent[(x, y)]
+            print("Path:", path[::-1])  # <- simple path print
+            return
+        moves = [(X,y),(x,Y),(0,y),(x,0),
+                 (x-min(x,Y-y),y+min(x,Y-y)),
+                 (x+min(y,X-x),y-min(y,X-x))]
+        for nx, ny in moves:
+            if (nx, ny) not in visited:
+                parent[(nx, ny)] = (x, y)
+                heapq.heappush(pq, (g+1+abs(nx-target), g+1, (nx, ny)))
+    print("Not Possible")
+# -------- User Input --------
+X = int(input("ENTER CAPACITY OF CONTAINER A: "))
+Y = int(input("ENTER CAPACITY OF CONTAINER B: "))
+target = int(input("THE NUMBER OF LITRES ASTRONAUT EXACTLY NEEDS: "))
+water_jug_astar(X, Y, target)
+
+OUTPUT;
+
+ENTER CAPACITY OF CONTAINER A: 7
+ENTER CAPACITY OF CONTAINER B: 4
+THE NUMBER OF LITRES ASTRONAUT EXACTLY NEEDS: 6
+Path: [(0, 0), (7, 0), (3, 4), (3, 0), (0, 3), (7, 3), (6, 4)]
+
+PROBLEM 3:
+
+CODE:
+
+import heapq
+def fuel_blend_astar_diff_strategy(A,B,target):
+    # User input
+    pq = [(0 + 0, 0, (0,0))]  # (f=g+h, g, (A_amount,B_amount))
+    parent = {(0,0): None}
+    visited = set()
+    while pq:
+        _, g, (x, y) = heapq.heappop(pq)
+        if (x, y) in visited: continue
+        visited.add((x, y))
+        # Goal
+        if x == target:
+            path = []
+            while (x, y) in parent:
+                path.append((x, y))
+                if parent[(x, y)] is None: break
+                x, y = parent[(x, y)]
+            print("Path:", path[::-1])
+            return
+        # Possible moves: fill, empty, pour
+        moves = [
+            (A, y),                   # fill A
+            (x, B),                   # fill B
+            (0, y),                   # empty A
+            (x, 0),                   # empty B
+            (x - min(x, B - y), y + min(x, B - y)),  # A -> B
+            (x + min(y, A - x), y - min(y, A - x))   # B -> A
+        ]
+        for nx, ny in moves:
+            if (nx, ny) not in visited:
+                parent[(nx, ny)] = (x, y)
+                h = abs(nx - target) + abs(ny)  # <-- Different heuristic
+                heapq.heappush(pq, (g + 1 + h, g + 1, (nx, ny)))
+    print("Not Possible")
+# Run the program
+A = int(input("Enter capacity of Flask A: "))
+B = int(input("Enter capacity of Flask B: "))
+target = int(input("Enter octane levels in Flask A: "))
+fuel_blend_astar_diff_strategy(A,B,target)
+
+OUTPUT:
+
+Enter capacity of Flask A: 6
+Enter capacity of Flask B: 2
+Enter octane levels in Flask A: 4
+Path: [(0, 0), (6, 0), (4, 2)]
