@@ -1,0 +1,76 @@
+CODE:
+
+# Manhattan Heuristic
+def h(a, b):
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+def order_pick():
+    print("Enter Start Position (row col):")
+    start = tuple(map(int, input().split()))
+
+    n = int(input("Enter Number of Pickup Points: "))
+
+    pickups = []
+    print("Enter Pickup Points (row col):")
+    for _ in range(n):
+        pickups.append(tuple(map(int, input().split())))
+
+    current = start
+    total_moves = 0
+
+    print("\nOrder Picking Process:")
+    print("Start Position:", current)
+
+    step = 1
+    while pickups:
+        nearest = min(pickups, key=lambda x: h(current, x))
+        distance = h(current, nearest)
+
+        print(f"\nStep {step}:")
+        print("Current Position:", current)
+        print("Nearest Pickup:", nearest)
+        print("Heuristic Distance:", distance)
+
+        total_moves += distance
+        current = nearest
+        pickups.remove(nearest)
+        step += 1
+
+    print("\nAll Orders Picked Successfully!")
+    print("Total Distance Travelled:", total_moves)
+
+
+order_pick()
+
+INPUT:
+
+Enter Start Position (row col):
+0 0
+Enter Number of Pickup Points:
+3
+Enter Pickup Points (row col):
+2 3
+1 1
+4 0
+
+OUTPUT:
+Order Picking Process:
+Start Position: (0, 0)
+
+Step 1:
+Current Position: (0, 0)
+Nearest Pickup: (1, 1)
+Heuristic Distance: 2
+
+Step 2:
+Current Position: (1, 1)
+Nearest Pickup: (2, 3)
+Heuristic Distance: 3
+
+Step 3:
+Current Position: (2, 3)
+Nearest Pickup: (4, 0)
+Heuristic Distance: 5
+
+All Orders Picked Successfully!
+Total Distance Travelled: 10

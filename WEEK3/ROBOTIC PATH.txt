@@ -1,0 +1,83 @@
+CODE:
+
+import heapq
+
+# Manhattan Heuristic
+def h(a, b):
+    return abs(a[0]-b[0]) + abs(a[1]-b[1])
+
+def greedy_path(grid, start, goal):
+    rows, cols = len(grid), len(grid[0])
+    pq = [(h(start, goal), start, [start])]
+    visited = set()
+
+    while pq:
+        _, current, path = heapq.heappop(pq)
+
+        if current == goal:
+            print("\nGoal Reached!")
+            print("Total Moves:", len(path)-1)
+            print("\nPath Followed:")
+            for i, p in enumerate(path):
+                print(f"Step {i}: {p}")
+            return
+
+        visited.add(current)
+
+        for dx, dy in [(-1,0),(1,0),(0,-1),(0,1)]:
+            nx, ny = current[0]+dx, current[1]+dy
+            if 0<=nx<rows and 0<=ny<cols and grid[nx][ny]==0:
+                next_node = (nx, ny)
+                if next_node not in visited:
+                    heapq.heappush(pq,
+                        (h(next_node, goal), next_node, path+[next_node]))
+
+    print("\n❌ No Path Found")
+
+
+# -------- USER INPUT --------
+r = int(input("Enter number of rows: "))
+c = int(input("Enter number of columns: "))
+
+print("Enter Grid (0 = free, 1 = obstacle):")
+grid = [list(map(int, input().split())) for _ in range(r)]
+
+print("Enter Start Position (row col):")
+start = tuple(map(int, input().split()))
+
+print("Enter Goal Position (row col):")
+goal = tuple(map(int, input().split()))
+
+greedy_path(grid, start, goal)
+
+INPUT:
+
+Enter number of rows: 4
+Enter number of columns: 4
+
+Enter Grid (0 = free, 1 = obstacle):
+0 0 0 0
+1 1 0 1
+0 0 0 0
+0 1 1 0
+
+Enter Start Position (row col):
+0 0
+
+Enter Goal Position (row col):
+3 3
+
+
+OUTPUT:
+
+Goal Reached!
+Total Moves: 6
+
+Path Followed:
+Step 0: (0, 0)
+Step 1: (0, 1)
+Step 2: (0, 2)
+Step 3: (1, 2)
+Step 4: (2, 2)
+Step 5: (2, 3)
+Step 6: (3, 3)
