@@ -1,0 +1,165 @@
+CODE:
+
+import heapq
+def h(s,g):
+    return sum(s[i][j]!=0 and s[i][j]!=g[i][j]
+               for i in range(3) for j in range(3))
+def neighbors(s):
+    x,y=next((i,j) for i in range(3) for j in range(3) if s[i][j]==0)
+    for dx,dy,m in [(-1,0,"Up"),(1,0,"Down"),(0,-1,"Left"),(0,1,"Right")]:
+        nx,ny=x+dx,y+dy
+        if 0<=nx<3 and 0<=ny<3:
+            t=[list(r) for r in s]
+            t[x][y],t[nx][ny]=t[nx][ny],t[x][y]
+            yield tuple(map(tuple,t)),m
+def show(s):
+    for r in s: print(r)
+    print()
+def greedy(start,goal):
+    pq=[(h(start,goal),start,[],[start])]
+    visited=set()
+    while pq:
+        _,cur,moves,states=heapq.heappop(pq)
+        if cur==goal:
+            print("✅ Goal Reached!")
+            print("Total Moves:",len(moves),"\n")
+            for i,s in enumerate(states):
+                print(f"Step {i}:")
+                show(s)
+                if i<len(moves):
+                    print("Move:",moves[i])
+                    print("---------------")
+            return
+        visited.add(cur)
+        for n,m in neighbors(cur):
+            if n not in visited:
+                heapq.heappush(pq,(h(n,goal),n,moves+[m],states+[n]))
+    print("❌ No Solution Found")
+print("Enter Initial State (3x3 matrix, use 0 for blank):")
+start=tuple(tuple(map(int,input().split())) for _ in range(3))
+print("\nEnter Goal State (3x3 matrix, use 0 for blank):")
+goal=tuple(tuple(map(int,input().split())) for _ in range(3))
+greedy(start,goal)
+
+INPUT:
+
+Enter Initial State (3x3 matrix, use 0 for blank):
+1 2 3
+4 0 5
+6 7 8
+
+Enter Goal State (3x3 matrix, use 0 for blank):
+1 2 3
+4 5 6
+7 8 0
+
+OUTPUT:
+
+✅ Goal Reached!
+Total Moves: 14 
+
+Step 0:
+(1, 2, 3)
+(4, 0, 5)
+(6, 7, 8)
+
+Move: Right
+---------------
+Step 1:
+(1, 2, 3)
+(4, 5, 0)
+(6, 7, 8)
+
+Move: Down
+---------------
+Step 2:
+(1, 2, 3)
+(4, 5, 8)
+(6, 7, 0)
+
+Move: Left
+---------------
+Step 3:
+(1, 2, 3)
+(4, 5, 8)
+(6, 0, 7)
+
+Move: Left
+---------------
+Step 4:
+(1, 2, 3)
+(4, 5, 8)
+(0, 6, 7)
+
+Move: Up
+---------------
+Step 5:
+(1, 2, 3)
+(0, 5, 8)
+(4, 6, 7)
+
+Move: Right
+---------------
+Step 6:
+(1, 2, 3)
+(5, 0, 8)
+(4, 6, 7)
+
+Move: Down
+---------------
+Step 7:
+(1, 2, 3)
+(5, 6, 8)
+(4, 0, 7)
+
+Move: Right
+---------------
+Step 8:
+(1, 2, 3)
+(5, 6, 8)
+(4, 7, 0)
+
+Move: Up
+---------------
+Step 9:
+(1, 2, 3)
+(5, 6, 0)
+(4, 7, 8)
+
+Move: Left
+---------------
+Step 10:
+(1, 2, 3)
+(5, 0, 6)
+(4, 7, 8)
+
+Move: Left
+---------------
+Step 11:
+(1, 2, 3)
+(0, 5, 6)
+(4, 7, 8)
+
+Move: Down
+---------------
+Step 12:
+(1, 2, 3)
+(4, 5, 6)
+(0, 7, 8)
+
+Move: Right
+---------------
+Step 13:
+(1, 2, 3)
+(4, 5, 6)
+(7, 0, 8)
+
+Move: Right
+---------------
+Step 14:
+(1, 2, 3)
+(4, 5, 6)
+(7, 8, 0)
+
+
+
